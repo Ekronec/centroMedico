@@ -3,7 +3,7 @@ from django.utils import timezone
 
 class Boleta(models.Model):
     id_boleta = models.PositiveIntegerField(primary_key=True)
-    monto_boleta = models.DecimalField(max_digits=20, decimal_places=2)
+    monto_boleta = models.DecimalField(max_digits=20, decimal_places=0)
     fecha_boleta = models.DateField()
 
 class Especialidad(models.Model):
@@ -18,7 +18,7 @@ class Medico(models.Model):
     apaterno_med = models.CharField(max_length=40)
     amaterno_med = models.CharField(max_length=20)
     fecnac_med = models.DateField()
-    honorario_med = models.DecimalField(max_digits=20, decimal_places=2)
+    honorario_med = models.DecimalField(max_digits=20, decimal_places=0)
     email_med = models.EmailField()
     telefono_med = models.PositiveIntegerField()
     feccont_med = models.DateField()
@@ -38,8 +38,8 @@ class Paciente(models.Model):
 class PagoAtencion(models.Model):
     id_ate = models.PositiveIntegerField(primary_key=True)
     fecha_pago = models.DateField()
-    monto_ate = models.DecimalField(max_digits=8, decimal_places=2)
-    monto_cancelar = models.DecimalField(max_digits=8, decimal_places=2)
+    monto_ate = models.DecimalField(max_digits=8, decimal_places=0)
+    monto_cancelar = models.DecimalField(max_digits=8, decimal_places=0)
     observacion = models.CharField(max_length=100)
 
 class Secretaria(models.Model):
@@ -50,7 +50,7 @@ class Secretaria(models.Model):
     apaterno_sec = models.CharField(max_length=40)
     amaterno_sec = models.CharField(max_length=20)
     fecnac_sec = models.DateField()
-    honorario_sec = models.DecimalField(max_digits=20, decimal_places=2)
+    honorario_sec = models.DecimalField(max_digits=20, decimal_places=0)
     email_sec = models.EmailField()
     telefono_sec = models.PositiveIntegerField()
     feccont_sec = models.DateField()
@@ -66,10 +66,10 @@ class EspecialidadMedico(models.Model):
     fec_inic_esp = models.DateField()
 
 class Atencion(models.Model):
-    id_ate = models.PositiveIntegerField(primary_key=True)
+    id_ate = models.AutoField(primary_key=True)
     fecha_ate = models.DateField(default=timezone.now)
     hora_ate = models.TimeField(default=0)
-    precio_ate = models.DecimalField(max_digits=20, decimal_places=2)
+    precio_ate = models.DecimalField(max_digits=20, decimal_places=0)
     bono_ate = models.CharField(max_length=20, default='valor_predeterminado')
     rut_cli = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     rut_med = models.ForeignKey(Medico, on_delete=models.CASCADE, related_name='atenciones')

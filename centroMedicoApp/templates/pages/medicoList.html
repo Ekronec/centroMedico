@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Médicos</title>
+</head>
+<body>
+    <h2>Lista de Médicos</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>RUT</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medico in medicos %}
+                <tr>
+                    <td>{{ medico.rut_med }}</td>
+                    <td>{{ medico.pnombre_med }} {{ medico.snombre_med|default:"" }}</td>
+                    <td>{{ medico.apaterno_med }}</td>
+                    <td>{{ medico.amaterno_med }}</td>
+                    <td>{{ medico.email_med }}</td>
+                    <td>{{ medico.telefono_med }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
