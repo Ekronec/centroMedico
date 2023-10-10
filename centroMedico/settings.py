@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'centroMedicoApp',
     'centroMedico',
-    'bootstrap5',
 ]
 
 MIDDLEWARE = [

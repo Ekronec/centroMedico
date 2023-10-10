@@ -74,11 +74,10 @@ class Atencion(models.Model):
     rut_cli = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     rut_med = models.ForeignKey(Medico, on_delete=models.CASCADE, related_name='atenciones')
     id_boleta = models.ForeignKey(Boleta, on_delete=models.CASCADE)
-    rut_med1 = models.ForeignKey(Medico, on_delete=models.CASCADE, related_name='atenciones_asistidas')
     id_esp = models.ForeignKey(Especialidad, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = [('id_ate', 'rut_med1', 'id_esp')]
+        unique_together = [('id_ate', 'id_esp')]
         
     def hora_formateada(self):
         # Formatear la hora en el formato deseado (por ejemplo, 03:30 PM)
