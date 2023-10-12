@@ -8,7 +8,11 @@ class Boleta(models.Model):
 
 class Especialidad(models.Model):
     id_esp = models.PositiveIntegerField(primary_key=True)
-    nom_esp = models.CharField(max_length=20)
+    nom_esp = models.CharField(max_length=40)
+    monto_esp = models.DecimalField(max_digits=8, decimal_places=0, default=0)
+
+    def __str__(self):
+        return f"{self.nom_esp}"
 
 class Medico(models.Model):
     rut_med = models.PositiveIntegerField(primary_key=True)
@@ -25,6 +29,12 @@ class Medico(models.Model):
     rut_sec = models.ForeignKey('Secretaria', on_delete=models.CASCADE)
     email_user = models.CharField(max_length=10, unique=True)
 
+    def especialidad_nombre(self):
+        return self.especialidadmedico_set.first().id_esp.nom_esp
+
+    def __str__(self):
+        return f"{self.pnombre_med} {self.apaterno_med}"
+
 class Paciente(models.Model):
     rut_cli = models.PositiveIntegerField(primary_key=True)
     dv_cli = models.CharField(max_length=1)
@@ -34,6 +44,9 @@ class Paciente(models.Model):
     amaterno_cli = models.CharField(max_length=40)
     email_cli = models.EmailField(null=True, blank=True)
     telefono_cli = models.PositiveIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.pnom_cli} {self.apaterno_cli} {self.amaterno_cli}"
 
 class PagoAtencion(models.Model):
     id_ate = models.PositiveIntegerField(primary_key=True)
@@ -56,6 +69,9 @@ class Secretaria(models.Model):
     feccont_sec = models.DateField()
     email_user = models.CharField(max_length=10, unique=True)
 
+    def __str__(self):
+        return f"{self.pnom_sec} {self.apaterno_sec} {self.amaterno_sec}"
+
 class User(models.Model):
     email_user = models.CharField(max_length=10, primary_key=True)
     password_user = models.CharField(max_length=40)
@@ -70,7 +86,7 @@ class Atencion(models.Model):
     fecha_ate = models.DateField(default=timezone.now)
     hora_ate = models.TimeField(default=0)
     precio_ate = models.DecimalField(max_digits=20, decimal_places=0)
-    bono_ate = models.CharField(max_length=20, default='valor_predeterminado')
+    bono_ate = models.CharField(max_length=20, default=0)
     rut_cli = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     rut_med = models.ForeignKey(Medico, on_delete=models.CASCADE, related_name='atenciones')
     id_boleta = models.ForeignKey(Boleta, on_delete=models.CASCADE)

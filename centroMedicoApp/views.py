@@ -62,10 +62,26 @@ def medicoList(request):
     context = {'medicos': medicos}
     return render(request, 'pages/medicoList.html', context)
 
-def medico_detail(request, rut_med):
-    medico = get_object_or_404(Medico, pk=rut_med)
-    context = {'medico': medico}
-    return render(request, 'pages/medicoDeatils.html', context)
+def medicoDetails(request, rut_med):
+    try:
+        # Obtener el médico a partir del rut_med
+        medico = Medico.objects.get(rut_med=rut_med)
+
+        # Obtener las especialidades asociadas a este médico
+        especialidades = Especialidad.objects.filter(
+            especialidadmedico__rut_med=rut_med
+        ).values('nom_esp')
+
+        context = {
+            'medico': medico,
+            'especialidades': especialidades
+        }
+
+        return render(request, 'pages/medicoDetails.html', context)
+    
+    except Medico.DoesNotExist:
+        # Manejar el caso en que no se encuentre el médico
+        return render(request, 'pages/medicoDetails.html')
 
 def create_medico(request):
     if request.method == "POST":
