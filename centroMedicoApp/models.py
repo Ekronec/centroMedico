@@ -27,13 +27,13 @@ class Medico(models.Model):
     telefono_med = models.PositiveIntegerField()
     feccont_med = models.DateField()
     rut_sec = models.ForeignKey('Secretaria', on_delete=models.CASCADE)
-    email_user = models.CharField(max_length=10, unique=True)
+    email_user = models.CharField(max_length=100, unique=True)
 
     def especialidad_nombre(self):
         return self.especialidadmedico_set.first().id_esp.nom_esp
 
     def __str__(self):
-        return f"{self.pnombre_med} {self.apaterno_med}"
+        return f"{self.pnombre_med} {self.apaterno_med} {self.amaterno_med}"
 
 class Paciente(models.Model):
     rut_cli = models.PositiveIntegerField(primary_key=True)
@@ -67,19 +67,22 @@ class Secretaria(models.Model):
     email_sec = models.EmailField()
     telefono_sec = models.PositiveIntegerField()
     feccont_sec = models.DateField()
-    email_user = models.CharField(max_length=10, unique=True)
+    email_user = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return f"{self.pnom_sec} {self.apaterno_sec} {self.amaterno_sec}"
 
 class User(models.Model):
-    email_user = models.CharField(max_length=10, primary_key=True)
+    email_user = models.CharField(max_length=100, primary_key=True)
     password_user = models.CharField(max_length=40)
 
 class EspecialidadMedico(models.Model):
     rut_med = models.ForeignKey(Medico, on_delete=models.CASCADE)
     id_esp = models.ForeignKey(Especialidad, on_delete=models.CASCADE)
     fec_inic_esp = models.DateField()
+
+    def __str__(self):
+        return f"{self.rut_med} {self.id_esp}"
 
 class Atencion(models.Model):
     id_ate = models.AutoField(primary_key=True)

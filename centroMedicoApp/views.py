@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, User
-from django.utils import timezone
+from django.views import View
+from django.http import JsonResponse
 
 def index(request):
     return render(request, "pages/index.html")
@@ -8,37 +9,25 @@ def index(request):
 
 # Atencion
 
+
 def appointmentNew(request):
-    if request.method != "POST":
-        # Aquí puedes obtener otros datos necesarios para la vista
-        # por ejemplo, pacientes, médicos, especialidades, etc.
-        # Ejemplo:
-        # pacientes = Paciente.objects.all()
-        # medicos = Medico.objects.all()
-        # especialidades = Especialidad.objects.all()
-        
-        context = {
-            # Agrega los datos que necesitas en el contexto
-            # por ejemplo:
-            # 'pacientes': pacientes,
-            # 'medicos': medicos,
-            # 'especialidades': especialidades
-        }
-        return render(request, 'pages/appointmentNew.html', context)
-    else:
-        # Obtén los datos del formulario
-        fecha_ate = request.POST.get("fecha_ate")
-        hora_ate = request.POST.get("hora_ate")
-        precio_ate = request.POST.get("precio_ate")
-        bono_ate = request.POST.get("bono_ate")
-        rut_cli_id = request.POST.get("rut_cli")
-        rut_med_id = request.POST.get("rut_med")
-        id_boleta_id = request.POST.get("id_boleta")
-        rut_med1_id = request.POST.get("rut_med1")
-        id_esp_id = request.POST.get("id_esp")
-        
-        # Crea el objeto de Atencion
-        obj_atencion = Atencion.objects.create(
+    context = {}
+    #medicos = Medico.objects.all()
+    especialidad = Especialidad.objects.all();
+    context ={
+        "especialidades":especialidad
+    }
+    if request.method == "POST":
+        fecha_ate = request.POST["fecha_ate"]
+        hora_ate = request.POST["hora_ate"]
+        precio_ate = request.POST["precio_ate"]
+        bono_ate = request.POST["bono_ate"]
+        rut_cli_id = request.POST["rut_cli"]
+        rut_med_id = request.POST["rut_med"]
+        id_boleta_id = request.POST["id_boleta"]
+        id_esp_id = request.POST["id_esp"]
+    
+        atencion = Atencion.objects.create(
             fecha_ate=fecha_ate,
             hora_ate=hora_ate,
             precio_ate=precio_ate,
@@ -46,14 +35,14 @@ def appointmentNew(request):
             rut_cli_id=rut_cli_id,
             rut_med_id=rut_med_id,
             id_boleta_id=id_boleta_id,
-            rut_med1_id=rut_med1_id,
             id_esp_id=id_esp_id,
         )
-        obj_atencion.save()
-        context = {"mensaje": "OK Atencion Registrada"}
+        atencion.save()
+        context = {"mensaje": "OK Atención Registrada"}
         return render(request, "pages/appointmentNew.html", context)
-    
-    
+    else:
+        return render(request, 'pages/appointmentNew.html', context)
+       
     
 # Medico  
     
@@ -302,10 +291,12 @@ def create_especialidad(request):
     if request.method == "POST":
         id_esp = request.POST["id_esp"]
         nom_esp = request.POST["nom_esp"]
+        monto_esp = request.POST["monto_esp"]
     
         especialidad = Especialidad.objects.create(
             id_esp=id_esp,
             nom_esp=nom_esp,
+            monto_esp=monto_esp,
         )
         especialidad.save()
         context = {"mensaje": "OK Especialidad Registrada"}
@@ -313,6 +304,16 @@ def create_especialidad(request):
     else:
         return render(request, 'pages/especialidad_new.html')
 
+class GetEspecialidadPriceView(View):
+    def get(self, request):
+        especialidad_id = request.GET.get('id_esp')
+        especialidad = get_object_or_404(Especialidad, id_esp=especialidad_id)
+
+        # Obtén el precio de la especialidad
+        precio = especialidad.monto_esp
+
+        # Devuelve el precio en la respuesta AJAX
+        return JsonResponse({'precio': precio})
 
 
 #Paciente
