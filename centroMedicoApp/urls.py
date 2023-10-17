@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import GetEspecialidadPriceView
 
 urlpatterns = [
     path('index',views.index, name='index'),
@@ -8,5 +7,5 @@ urlpatterns = [
     path('medicoList',views.medicoList, name='medicoList'),
     path('medicoDetails/<int:rut_med>/', views.medicoDetails, name='medicoDetails'),
     path('especialidad_detail/<int:id_esp>/', views.especialidad_detail, name='especialidad_detail'),
-   path('get_especialidad_price/', GetEspecialidadPriceView.as_view(), name='get_especialidad_price'),
+    path('get_precio/<int:id_esp>/', views.get_precio, name='get_precio'),
 ]

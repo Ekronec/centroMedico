@@ -9,6 +9,14 @@ def index(request):
 
 # Atencion
 
+def appointment_details(request):
+
+    atencion = Atencion.objects.all();
+    context ={
+        "atencion": atencion 
+    }
+
+    return render(request, "pages/appointmentNew.html", context)
 
 def appointmentNew(request):
     context = {}
@@ -304,16 +312,14 @@ def create_especialidad(request):
     else:
         return render(request, 'pages/especialidad_new.html')
 
-class GetEspecialidadPriceView(View):
-    def get(self, request):
-        especialidad_id = request.GET.get('id_esp')
-        especialidad = get_object_or_404(Especialidad, id_esp=especialidad_id)
+def get_precio(request, id_esp):
+    especialidad = get_object_or_404(Especialidad, id_esp=id_esp)
 
-        # Obtén el precio de la especialidad
-        precio = especialidad.monto_esp
+    # Obtén el precio de la especialidad
+    precio = especialidad.monto_esp
 
-        # Devuelve el precio en la respuesta AJAX
-        return JsonResponse({'precio': precio})
+    # Devuelve el precio en la respuesta AJAX
+    return JsonResponse({'precio': precio})
 
 
 #Paciente

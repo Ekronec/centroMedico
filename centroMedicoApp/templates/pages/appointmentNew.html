@@ -9,7 +9,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/format_numbers.js' %}"></script>
-    <script src="{% static 'js/appointment.js' %}"></script>
     
 </head>
 <body>
@@ -24,16 +23,16 @@
         <input type="time" name="hora_ate" step="600" required>
 
         <label for="id_esp">Especialidad:</label>
-            <select id="esp_select" name="esp_select" required>
-                <option value="" disabled selected>Seleccione una especialidad</option>
-                {% for especialidad in especialidades %}
-                    <option value="{{ especialidad.id_esp }}">{{ especialidad.nom_esp }}</option>
-                    {{ especialidad.monto_esp }} = precio_ate
-                {% endfor %}
-            </select><br>
-
+        <select id="esp_select" name="esp_select" required>
+            <option value="" disabled selected>Seleccione una especialidad</option>
+            {% for especialidad in especialidades %}
+                <option value="{{ especialidad.id_esp }}">{{ especialidad.nom_esp }}</option>
+            {% endfor %}
+            <script src="{% static 'js/appointments.js' %}"></script>
+        </select><br>
+            
         <label for="precio_ate">Precio de Atención:</label>
-        <input type="text" name="precio_ate" required><br>
+        <input id="precio_ate" type="text"  name="precio_ate" readonly required><br>
 
 
         <label for="bono_ate">Bono de Atención:</label>
