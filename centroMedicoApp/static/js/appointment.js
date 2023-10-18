@@ -1,5 +1,7 @@
-var seleccionado = document.getElementById("esp_select");
+var seleccionado = document.getElementById("id_esp");
 var precioInput = document.getElementById("precio_ate");
+var bono_ate = document.getElementById("bono_ate");
+var monto_boleta = document.getElementById("monto_boleta")
 console.log(precioInput);
 
 seleccionado.addEventListener('change', function(){
@@ -12,6 +14,7 @@ seleccionado.addEventListener('change', function(){
         .then(data => {
             // Asigna el precio al input
             precioInput.value = data.precio;
+            monto_boleta.value = data.precio - bono_ate.value;
         })
 })
 

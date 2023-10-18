@@ -22,28 +22,61 @@ def appointmentNew(request):
     context = {}
     #medicos = Medico.objects.all()
     especialidad = Especialidad.objects.all();
+    paciente_detail = Paciente.objects.all();
+    medico = Medico.objects.all();
+    boleta_detail = Boleta.objects.all();
+    
     context ={
-        "especialidades":especialidad
+        "especialidades":especialidad,
+        "paciente_detail":paciente_detail,
+        "medico":medico,
+        "boleta_detail":boleta_detail,
     }
     if request.method == "POST":
         fecha_ate = request.POST["fecha_ate"]
+        fecha_boleta = request.POST["fecha_boleta"]
         hora_ate = request.POST["hora_ate"]
         precio_ate = request.POST["precio_ate"]
+        monto_boleta = request.POST["monto_boleta"]
         bono_ate = request.POST["bono_ate"]
-        rut_cli_id = request.POST["rut_cli"]
-        rut_med_id = request.POST["rut_med"]
-        id_boleta_id = request.POST["id_boleta"]
-        id_esp_id = request.POST["id_esp"]
+        rut_cli = request.POST["rut_cli"]
+        rut_med = request.POST["rut_med"]
+        id_boleta = request.POST["id_boleta"]
+        id_esp = request.POST["id_esp"]
+
+        dv_cli = request.POST["dv_cli"]
+        pnom_cli = request.POST["pnom_cli"]
+        snom_cli = request.POST["snom_cli"]
+        apaterno_cli = request.POST["apaterno_cli"]
+        amaterno_cli = request.POST["amaterno_cli"]
+
+
+        paciente = Paciente.objects.create(
+            rut_cli=rut_cli,
+            dv_cli = dv_cli,
+            pnom_cli = pnom_cli,
+            snom_cli = snom_cli,
+            apaterno_cli = apaterno_cli,
+            amaterno_cli = amaterno_cli
+        )
+        paciente.save()
+
+        boleta = Boleta.objects.create(
+            id_boleta= id_boleta,
+            fecha_boleta = fecha_boleta,
+            monto_boleta = monto_boleta,
+        )
+        boleta.save();
     
         atencion = Atencion.objects.create(
             fecha_ate=fecha_ate,
             hora_ate=hora_ate,
             precio_ate=precio_ate,
             bono_ate=bono_ate,
-            rut_cli_id=rut_cli_id,
-            rut_med_id=rut_med_id,
-            id_boleta_id=id_boleta_id,
-            id_esp_id=id_esp_id,
+            rut_cli=rut_cli,
+            rut_med=rut_med,
+            id_boleta=id_boleta,
+            id_esp=id_esp,
         )
         atencion.save()
         context = {"mensaje": "OK Atención Registrada"}
