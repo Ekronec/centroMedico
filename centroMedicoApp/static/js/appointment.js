@@ -1,6 +1,7 @@
 var seleccionado = document.getElementById("esp_select");
 var precioInput = document.getElementById("precio_ate");
-/*
+console.log(precioInput);
+
 seleccionado.addEventListener('change', function(){
     especialidad = seleccionado.value;
     console.log(especialidad);
@@ -13,17 +14,6 @@ seleccionado.addEventListener('change', function(){
             precioInput.value = data.precio;
         })
 })
-*/
-seleccionado.addEventListener('change', function() {
-    especialidad = seleccionado.value;
-    console.log(especialidad);
-
-    if (precioInput) {
-        precioInput.value = especialidad;  // O establece el valor que desees aquí
-    } else {
-        console.error('Elemento con ID "precio_ate" no encontrado.');
-    }
-});
 
 
 

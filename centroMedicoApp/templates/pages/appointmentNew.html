@@ -28,12 +28,12 @@
             {% for especialidad in especialidades %}
                 <option value="{{ especialidad.id_esp }}">{{ especialidad.nom_esp }}</option>
             {% endfor %}
-            <script src="{% static 'js/appointments.js' %}"></script>
+            <script src="{% static 'js/appointment.js' %}"></script>
         </select><br>
-            
-        <label for="precio_ate">Precio de Atención:</label>
-        <input id="precio_ate" type="text"  name="precio_ate" readonly required><br>
-
+         
+        <label for="precio_ate" value="0">Precio de Atención:</label>
+        <input id="precio_ate" type="text"  name="precio_ate" value="0" readonly required><br>
+        <script src="{% static 'js/appointment.js' %}"></script>
 
         <label for="bono_ate">Bono de Atención:</label>
         <input type="text" name="bono_ate" required><br>
@@ -46,12 +46,6 @@
 
         <label for="id_boleta">ID de la Boleta:</label>
         <input type="text" name="id_boleta" required><br>
-
-        <label for="rut_med1">RUT del Médico Asistente:</label>
-        <input type="text" name="rut_med1" required><br>
-
-        <label for="id_esp">ID de la Especialidad:</label>
-        <input type="text" name="id_esp" required><br>
 
         <input type="submit" value="Crear Atención">
     </form>
