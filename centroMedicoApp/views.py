@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, User
 from django.views import View
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
+from django.db import IntegrityError
+import random
+from django.db.models import Max
 
 def index(request):
     return render(request, "pages/index.html")
@@ -23,64 +26,95 @@ def appointmentNew(request):
     #medicos = Medico.objects.all()
     especialidad = Especialidad.objects.all();
     paciente_detail = Paciente.objects.all();
-    medico = Medico.objects.all();
+    medico_detail = Medico.objects.all();
     boleta_detail = Boleta.objects.all();
     
     context ={
         "especialidades":especialidad,
         "paciente_detail":paciente_detail,
-        "medico":medico,
+        "medico_detail":medico_detail,
         "boleta_detail":boleta_detail,
     }
     if request.method == "POST":
         fecha_ate = request.POST["fecha_ate"]
-        fecha_boleta = request.POST["fecha_boleta"]
         hora_ate = request.POST["hora_ate"]
         precio_ate = request.POST["precio_ate"]
-        monto_boleta = request.POST["monto_boleta"]
         bono_ate = request.POST["bono_ate"]
-        rut_cli = request.POST["rut_cli"]
         rut_med = request.POST["rut_med"]
-        id_boleta = request.POST["id_boleta"]
         id_esp = request.POST["id_esp"]
 
-        dv_cli = request.POST["dv_cli"]
-        pnom_cli = request.POST["pnom_cli"]
-        snom_cli = request.POST["snom_cli"]
-        apaterno_cli = request.POST["apaterno_cli"]
-        amaterno_cli = request.POST["amaterno_cli"]
+        rut_cli = request.POST["rut_cli"]
 
+        last_boleta = Boleta.objects.order_by('-id_boleta').first()
 
-        paciente = Paciente.objects.create(
-            rut_cli=rut_cli,
-            dv_cli = dv_cli,
-            pnom_cli = pnom_cli,
-            snom_cli = snom_cli,
-            apaterno_cli = apaterno_cli,
-            amaterno_cli = amaterno_cli
-        )
-        paciente.save()
+        if last_boleta:
+            next_id_boleta = last_boleta.id_boleta + 1
+        else:
+            # Si no hay boletas en la base de datos, empieza en 1
+            next_id_boleta = 1
 
-        boleta = Boleta.objects.create(
-            id_boleta= id_boleta,
-            fecha_boleta = fecha_boleta,
-            monto_boleta = monto_boleta,
+        try:
+            medico = Medico.objects.get(rut_med=rut_med)
+
+        except Medico.DoesNotExist:
+            return HttpResponse("No hay Medico con ese rut")
+
+        try:
+            # Intenta obtener un paciente con el mismo rut_cli_id
+            paciente = Paciente.objects.get(rut_cli=rut_cli)
+
+            # Si el paciente existe, actualiza sus detalles
+            rut_cli=paciente,
+            paciente.dv_cli = request.POST["dv_cli"]
+            paciente.pnom_cli = request.POST["pnom_cli"]
+            paciente.snom_cli = request.POST["snom_cli"]
+            paciente.apaterno_cli = request.POST["apaterno_cli"]
+            paciente.amaterno_cli = request.POST["amaterno_cli"]
+            paciente.save()
+
+            # Resto del código para crear boleta y atención
+        except Paciente.DoesNotExist:
+            # Si no existe, crea un nuevo paciente
+            paciente = Paciente.objects.create(
+                rut_cli=rut_cli,
+                dv_cli=request.POST["dv_cli"],
+                pnom_cli=request.POST["pnom_cli"],
+                snom_cli=request.POST["snom_cli"],
+                apaterno_cli=request.POST["apaterno_cli"],
+                amaterno_cli=request.POST["amaterno_cli"],
+            )
+            paciente.save();
+            
+
+        try:
+            boleta = Boleta.objects.create(
+            id_boleta=next_id_boleta,
+            fecha_boleta = request.POST["fecha_boleta"],
+            monto_boleta = request.POST["monto_boleta"]
         )
-        boleta.save();
-    
-        atencion = Atencion.objects.create(
-            fecha_ate=fecha_ate,
-            hora_ate=hora_ate,
-            precio_ate=precio_ate,
-            bono_ate=bono_ate,
-            rut_cli=rut_cli,
-            rut_med=rut_med,
-            id_boleta=id_boleta,
-            id_esp=id_esp,
-        )
-        atencion.save()
-        context = {"mensaje": "OK Atención Registrada"}
-        return render(request, "pages/appointmentNew.html", context)
+            boleta.save()
+        # Resto del código para crear atención
+
+            boleta_id = Boleta.objects.get(id_boleta=next_id_boleta)
+            esp_id = Especialidad.objects.get(id_esp=id_esp)
+        
+            atencion = Atencion.objects.create(
+                fecha_ate=fecha_ate,
+                hora_ate=hora_ate,
+                precio_ate=precio_ate,
+                bono_ate=bono_ate,
+                rut_cli=paciente,
+                rut_med=medico,
+                id_boleta=boleta_id,
+                id_esp=esp_id,
+            )
+            atencion.save()
+            context = {"mensaje": "OK Atención Registrada"}
+            return render(request, "pages/index.html", context)
+        except IntegrityError:
+        # Si falla por una restricción única, genera un nuevo ID de boleta y vuelve a intentar
+            new_id_boleta = random.randint(100000, 999999)  # Genera un nuevo ID aleatorio
+            return HttpResponse(f"Error: El ID de boleta  ya está en uso. Intenta con {new_id_boleta}")
     else:
         return render(request, 'pages/appointmentNew.html', context)
        

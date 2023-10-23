@@ -40,28 +40,28 @@
         <label for="bono_ate">Bono de Atención:</label>
         <input type="text" name="bono_ate" id="bono_ate" required><br>
 
-        <label for="rut_cli">RUT del Cliente:</label>
+        <label for="rut_cli">RUT del Paciente:</label>
         <input type="text" name="rut_cli" required><br>
 
         <label for="rut_med">RUT del Médico:</label>
         <input type="text" name="rut_med" required><br>
 
-        <label for="id_boleta">ID de la Boleta:</label>
-        <input type="text" name="id_boleta" required><br>
+        <label for="id_boleta" class="visually-hidden">ID de la Boleta:</label>
+        <input type="text" name="id_boleta" id="id_boleta" readonly hidden><br>
 
         <label for="dv_cli">Dígito Verificador del RUT del Cliente:</label>
         <input type="text" name="dv_cli" required><br>
 
-        <label for="pnom_cli">Primer Nombre del Cliente:</label>
+        <label for="pnom_cli">Primer Nombre del Paciente:</label>
         <input type="text" name="pnom_cli" required><br>
 
-        <label for="snom_cli">Segundo Nombre del Cliente:</label>
-        <input type="text" name="snom_cli" required><br>
+        <label for="snom_cli">Segundo Nombre del Paciente:</label>
+        <input type="text" name="snom_cli"><br>
 
-        <label for="apaterno_cli">Apellido Paterno del Cliente:</label>
+        <label for="apaterno_cli">Apellido Paterno del Paciente:</label>
         <input type="text" name="apaterno_cli" required><br>
 
-        <label for="amaterno_cli">Apellido Materno del Cliente:</label>
+        <label for="amaterno_cli">Apellido Materno del Paciente:</label>
         <input type="text" name="amaterno_cli" required><br>
 
         <input id="monto_boleta" type="text"  name="monto_boleta" value="0" readonly hidden required><br>

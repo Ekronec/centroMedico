@@ -6,6 +6,9 @@ class Boleta(models.Model):
     monto_boleta = models.DecimalField(max_digits=20, decimal_places=0)
     fecha_boleta = models.DateField()
 
+    def __str__(self):
+        return f"{self.id_boleta}"
+
 class Especialidad(models.Model):
     id_esp = models.PositiveIntegerField(primary_key=True)
     nom_esp = models.CharField(max_length=40)
@@ -55,6 +58,9 @@ class PagoAtencion(models.Model):
     monto_cancelar = models.DecimalField(max_digits=8, decimal_places=0)
     observacion = models.CharField(max_length=100)
 
+    def __str__(self):
+        return f"{self.id_ate}"
+
 class Secretaria(models.Model):
     rut_sec = models.PositiveIntegerField(primary_key=True)
     dv_sec = models.CharField(max_length=1)
@@ -75,6 +81,9 @@ class Secretaria(models.Model):
 class User(models.Model):
     email_user = models.CharField(max_length=100, primary_key=True)
     password_user = models.CharField(max_length=40)
+
+    def __str__(self):
+        return f"{self.email_user}"
 
 class EspecialidadMedico(models.Model):
     rut_med = models.ForeignKey(Medico, on_delete=models.CASCADE)
@@ -103,4 +112,4 @@ class Atencion(models.Model):
         return self.hora_ate.strftime("%I:%M %p")
 
     def __str__(self):
-        return self.hora_formateada()
+        return f"{self.fecha_ate} {self.hora_ate} {self.rut_cli}"
