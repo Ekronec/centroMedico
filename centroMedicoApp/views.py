@@ -1,10 +1,11 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, User
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, UserCentro
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from django.db import IntegrityError
 import random
 from django.db.models import Max
+from django.contrib.auth import authenticate, login
 
 def index(request):
     return render(request, "pages/index.html")
@@ -13,13 +14,19 @@ def index(request):
 # Atencion
 
 def appointment_details(request):
+    try:
+        atenciones = Atencion.objects.all();
 
-    atencion = Atencion.objects.all();
-    context ={
-        "atencion": atencion 
-    }
 
-    return render(request, "pages/appointmentNew.html", context)
+
+        context ={
+            "atenciones": atenciones,
+        }
+
+        return render(request, "pages/appointments_details.html", context)
+    except:
+        Atencion.DoesNotExist
+        return HttpResponse(f'No exiten atenciones')
 
 def appointmentNew(request):
     context = {}
@@ -293,12 +300,12 @@ def create_pago_atencion(request):
 # Usuario
 
 def user_list(request):
-    users = User.objects.all()
+    users = UserCentro.objects.all()
     context = {'users': users}
     return render(request, 'pages/user_list.html', context)
 
 def user_detail(request, email_user):
-    user = get_object_or_404(User, pk=email_user)
+    user = get_object_or_404(UserCentro, pk=email_user)
     context = {'user': user}
     return render(request, 'pages/user_detail.html', context)
 
@@ -307,7 +314,7 @@ def create_user(request):
         email_user = request.POST["email_user"]
         password_user = request.POST["password_user"]
     
-        user = User.objects.create(
+        user = UserCentro.objects.create(
             email_user=email_user,
             password_user=password_user,
         )
@@ -317,7 +324,24 @@ def create_user(request):
     else:
         return render(request, 'pages/user_new.html')    
     
+def login_view(request):
+    if request.method == 'POST':
+        rut = request.POST['rut']
+        password = request.POST['password']
 
+        # Autenticar al usuario
+        user = authenticate(request, rut=rut, password=password)
+
+        if user is not None:
+            login(request, user)
+            # El usuario ha iniciado sesión exitosamente
+            return redirect('página_de_inicio')  # Redirige a la página de inicio después del inicio de sesión
+        else:
+            # Las credenciales son incorrectas
+            error_message = "Las credenciales son incorrectas. Inténtalo de nuevo."
+
+    # Renderiza el formulario de inicio de sesión
+    return render(request, 'login.html', {'error_message': error_message})
 
 # Especialidad Medico
 

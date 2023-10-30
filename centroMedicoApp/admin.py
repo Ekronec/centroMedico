@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, User
+from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, UserCentro
 
 admin.site.register(Atencion)
 admin.site.register(Medico)
@@ -9,4 +9,4 @@ admin.site.register(Especialidad)
 admin.site.register(EspecialidadMedico)
 admin.site.register(Paciente)
 admin.site.register(PagoAtencion)
-admin.site.register(User)
+admin.site.register(UserCentro)

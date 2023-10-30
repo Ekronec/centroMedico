@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de especialidades</title>
+</head>
+<body>
+    <h2>Lista de especialidades</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for especialidad in especialidades %}
+                <tr>
+                    <td>{{ especialidad.id_esp }}</td>
+                    <td>{{ especialidad.nom_esp }}</td>
+                    <td>{{ especialidad.monto_esp }}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

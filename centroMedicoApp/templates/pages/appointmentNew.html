@@ -12,62 +12,100 @@
     
 </head>
 <body>
-    <h2>Crear Atención</h2>
+    <div class="container">
+        <h2 class="mt-4">Crear Atención</h2>
 
-    <form method="post" action="{% url 'appointmentNew' %}">
-        {% csrf_token %}
-        <label for="fecha_ate">Fecha de Atención:</label>
-        <input type="date" name="fecha_ate" id="fecha_ate" required><br>
-        <input type="date" name="fecha_boleta" id="fecha_boleta" hidden required><br>
-        <script src="{% static 'js/estimate.js' %}"></script>
+        <form method="post" action="{% url 'appointmentNew' %}" class="mt-4">
+            {% csrf_token %}
 
-        <label for="hora_ate">Hora de Atención:</label>
-        <input type="time" name="hora_ate" step="600" required>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="id_esp" class="form-label">Especialidad:</label>
+                    <select id="id_esp" name="id_esp" class="form-select" required>
+                        <option value="" disabled selected>Seleccione una especialidad</option>
+                        {% for especialidad in especialidades %}
+                            <option value="{{ especialidad.id_esp }}">{{ especialidad.nom_esp }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="rut_med" class="form-label">RUT del Médico:</label>
+                    <input type="text" name="rut_med" class="form-control" required>
+                </div>
+            </div>
 
-        <label for="id_esp">Especialidad:</label>
-        <select id="id_esp" name="id_esp" required>
-            <option value="" disabled selected>Seleccione una especialidad</option>
-            {% for especialidad in especialidades %}
-                <option value="{{ especialidad.id_esp }}">{{ especialidad.nom_esp }}</option>
-            {% endfor %}
-            <script src="{% static 'js/appointment.js' %}"></script>
-        </select><br>
-         
-        <label for="precio_ate" value="0">Precio de Atención:</label>
-        <input id="precio_ate" type="text"  name="precio_ate" value="0" readonly required><br>
-        
+            <div class="row mt-3">
 
-        <label for="bono_ate">Bono de Atención:</label>
-        <input type="text" name="bono_ate" id="bono_ate" required><br>
+                <div class="col-md-6">
+                    <label for="fecha_ate" class="form-label">Fecha de Atención:</label>
+                    <input type="date" name="fecha_ate" id="fecha_ate" class="form-control" required onchange="actualizarHoras()">
+                </div>
+                <div class="col-md-6">
+                    <label for="hora_ate" class="form-label">Hora de Atención:</label>
+                    <select name="hora_ate" step="600" class="form-select" id="hora_ate" readonly required>
+                        <script src="{% static 'js/index1.js' %}"></script>
+                    </select>
+                
+            </div>
 
-        <label for="rut_cli">RUT del Paciente:</label>
-        <input type="text" name="rut_cli" required><br>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="bono_ate" class="form-label">Bono de Atención:</label>
+                    <input type="text" name "bono_ate" id="bono_ate" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="rut_cli" class="form-label">RUT del Paciente:</label>
+                    <input type="text" name="rut_cli" class="form-control" required>
+                </div>
+            </div>
 
-        <label for="rut_med">RUT del Médico:</label>
-        <input type="text" name="rut_med" required><br>
+            <div class="row mt-3">
+                
+                <div class="col-md-6">
+                    <label for="precio_ate" class="form-label">Precio de Atención:</label>
+                    <input id="precio_ate" type="text" name="precio_ate" value="0" class="form-control" readonly required>
+                </div>
+                <div class="col-md-6">
+                    <label for="pnom_cli" class="form-label">Primer Nombre del Paciente:</label>
+                    <input type="text" name="pnom_cli" class="form-control" required>
+                </div>
+                
+            </div>
 
-        <label for="id_boleta" class="visually-hidden">ID de la Boleta:</label>
-        <input type="text" name="id_boleta" id="id_boleta" readonly hidden><br>
+            <div class="row mt-3">
+                
+                
+            </div>
 
-        <label for="dv_cli">Dígito Verificador del RUT del Cliente:</label>
-        <input type="text" name="dv_cli" required><br>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="snom_cli" class="form-label">Segundo Nombre del Paciente:</label>
+                    <input type="text" name="snom_cli" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="apaterno_cli" class="form-label">Apellido Paterno del Paciente:</label>
+                    <input type="text" name="apaterno_cli" class="form-control" required>
+                </div>
+            </div>
 
-        <label for="pnom_cli">Primer Nombre del Paciente:</label>
-        <input type="text" name="pnom_cli" required><br>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="amaterno_cli" class="form-label">Apellido Materno del Paciente:</label>
+                    <input type="text" name="amaterno_cli" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <input id="monto_boleta" type="text" name="monto_boleta" value="0" class="form-control" readonly hidden required>
+                </div>
+            </div>
+            <label for="id_boleta" class="form-label visually-hidden">ID de la Boleta:</label>
+            <input type="text" name="id_boleta" id="id_boleta" class="form-control" readonly hidden>
 
-        <label for="snom_cli">Segundo Nombre del Paciente:</label>
-        <input type="text" name="snom_cli"><br>
-
-        <label for="apaterno_cli">Apellido Paterno del Paciente:</label>
-        <input type="text" name="apaterno_cli" required><br>
-
-        <label for="amaterno_cli">Apellido Materno del Paciente:</label>
-        <input type="text" name="amaterno_cli" required><br>
-
-        <input id="monto_boleta" type="text"  name="monto_boleta" value="0" readonly hidden required><br>
-        <script src="{% static 'js/appointment.js' %}"></script>
-
-        <input type="submit" value="Crear Atención">
-    </form>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <input type="submit" value="Crear Atención" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

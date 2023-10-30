@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <h2></h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Fecha de la atencion</th>
+                <th>Hora de la atencion</th>
+                <th>Precio de la atención</th>
+                <th>Bono de la atencion</th>
+                <th>Nombre de Cliente</th>
+                <th>Nombre del Medico</th>
+                <th>Id de la boleta</th>
+                <th>Nombre de la especialidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for atencion in atenciones %}
+                <tr>
+                    <td>{{ atencion.fecha_ate }}</td>
+                    <td>{{ atencion.hora_ate }}</td>
+                    <td>{{ atencion.precio_ate }}</td>
+                    <td>{{ atencion.bono_ate }}</td>
+                    <td>{{ atencion.rut_cli }}</td>
+                    <td>{{ atencion.rut_med }}</td>
+                    <td>{{ atencion.id_boleta }}</td>
+                    <td>{{ atencion.id_esp }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
