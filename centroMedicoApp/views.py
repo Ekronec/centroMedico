@@ -6,6 +6,7 @@ from django.db import IntegrityError
 import random
 from django.db.models import Max
 from django.contrib.auth import authenticate, login
+from django.contrib.contenttypes.models import ContentType
 
 def index(request):
     return render(request, "pages/index.html")
@@ -127,6 +128,9 @@ def appointmentNew(request):
        
     
 # Medico  
+
+def med_index(request):
+    return render(request, 'pages/med_index.html')
     
 def medicoList(request):
     medicos = Medico.objects.all()
@@ -325,23 +329,37 @@ def create_user(request):
         return render(request, 'pages/user_new.html')    
     
 def login_view(request):
+
+    error_message = ""  # Inicializa con un valor predeterminado
+
     if request.method == 'POST':
         rut = request.POST['rut']
         password = request.POST['password']
+        print('leo aqui')
+        # Obtén el ContentType para el modelo 'Medico'
+        content_type = ContentType.objects.get(app_label='centroMedicoApp', model='medico')
 
-        # Autenticar al usuario
-        user = authenticate(request, rut=rut, password=password)
-
-        if user is not None:
-            login(request, user)
-            # El usuario ha iniciado sesión exitosamente
-            return redirect('página_de_inicio')  # Redirige a la página de inicio después del inicio de sesión
+        if not rut.isdigit():
+            error_message = 'El Rut debe ser un número. Tome en cuenta que es sin el guion'
         else:
-            # Las credenciales son incorrectas
-            error_message = "Las credenciales son incorrectas. Inténtalo de nuevo."
+            try:
+                # Intenta obtener un usuario de UserCentro con el Content Type y el Object ID correctos
+                user = UserCentro.objects.get(content_type=content_type, object_id=rut)
+
+                if user.password == password:
+                    # La contraseña coincide, puedes autenticar al usuario aquí si lo deseas
+                    # Luego, redirige al usuario a donde quieras
+                    return redirect('med_index')
+                else:
+                    error_message = "Las credenciales son incorrectas. Inténtalo de nuevo."
+            except ContentType.DoesNotExist:
+                # El ContentType no existe, lo que significa que el usuario no existe
+                error_message = "El usuario no existe."
+            except UserCentro.DoesNotExist:
+                error_message = "Usuario no encontrado."
 
     # Renderiza el formulario de inicio de sesión
-    return render(request, 'login.html', {'error_message': error_message})
+    return render(request, 'pages/log_prof.html', {'error_message': error_message})
 
 # Especialidad Medico
 
