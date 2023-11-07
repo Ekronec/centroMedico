@@ -198,6 +198,9 @@ def create_medico(request):
 
     
 # Secretaria
+
+def sec_index(request):
+    return render(request, 'pages/sec_index.html')
     
 def create_secretaria(request):
     if request.method == "POST":
@@ -331,32 +334,40 @@ def create_user(request):
 def login_view(request):
 
     error_message = ""  # Inicializa con un valor predeterminado
+    redirect_url = ""
+    user = None
 
     if request.method == 'POST':
         rut = request.POST['rut']
         password = request.POST['password']
         print('leo aqui')
         # Obtén el ContentType para el modelo 'Medico'
-        content_type = ContentType.objects.get(app_label='centroMedicoApp', model='medico')
+        content_type_medico = ContentType.objects.get(app_label='centroMedicoApp', model='medico')
+        content_type_secretaria = ContentType.objects.get(app_label='centroMedicoApp', model='secretaria')
 
         if not rut.isdigit():
             error_message = 'El Rut debe ser un número. Tome en cuenta que es sin el guion'
         else:
             try:
                 # Intenta obtener un usuario de UserCentro con el Content Type y el Object ID correctos
-                user = UserCentro.objects.get(content_type=content_type, object_id=rut)
+                user = UserCentro.objects.get(content_type=content_type_medico, object_id=rut)
+                redirect_url = 'med_index'
+            except UserCentro.DoesNotExist:
+                try:
+                    user = UserCentro.objects.get(content_type=content_type_secretaria, object_id=rut)
+                    redirect_url = 'sec_index'
+                except UserCentro.DoesNotExist:
+                    error_message = "El usuario no existe."
 
+            try:
                 if user.password == password:
                     # La contraseña coincide, puedes autenticar al usuario aquí si lo deseas
                     # Luego, redirige al usuario a donde quieras
-                    return redirect('med_index')
+                    return redirect(redirect_url)
                 else:
                     error_message = "Las credenciales son incorrectas. Inténtalo de nuevo."
-            except ContentType.DoesNotExist:
-                # El ContentType no existe, lo que significa que el usuario no existe
+            except AttributeError:
                 error_message = "El usuario no existe."
-            except UserCentro.DoesNotExist:
-                error_message = "Usuario no encontrado."
 
     # Renderiza el formulario de inicio de sesión
     return render(request, 'pages/log_prof.html', {'error_message': error_message})
