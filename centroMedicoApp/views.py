@@ -129,8 +129,15 @@ def appointmentNew(request):
     
 # Medico  
 
-def med_index(request):
-    return render(request, 'pages/med_index.html')
+def med_index(request, rut_med):
+
+    medico = Medico.objects.get(rut_med=rut_med)
+
+    context = {
+        'medico': medico,
+    }
+
+    return render(request, 'pages/med_index.html', context)
     
 def medicoList(request):
     medicos = Medico.objects.all()
@@ -199,8 +206,15 @@ def create_medico(request):
     
 # Secretaria
 
-def sec_index(request):
-    return render(request, 'pages/sec_index.html')
+def sec_index(request, rut_sec):
+
+    secretaria = Secretaria.objects.get(rut_sec=rut_sec)
+
+    context = {
+        'secretaria': secretaria,
+    }
+
+    return render(request, 'pages/sec_index.html', context)
     
 def create_secretaria(request):
     if request.method == "POST":
@@ -351,11 +365,11 @@ def login_view(request):
             try:
                 # Intenta obtener un usuario de UserCentro con el Content Type y el Object ID correctos
                 user = UserCentro.objects.get(content_type=content_type_medico, object_id=rut)
-                redirect_url = 'med_index'
+                redirect_url = 'med_index/' + rut
             except UserCentro.DoesNotExist:
                 try:
                     user = UserCentro.objects.get(content_type=content_type_secretaria, object_id=rut)
-                    redirect_url = 'sec_index'
+                    redirect_url = 'sec_index/' + rut
                 except UserCentro.DoesNotExist:
                     error_message = "El usuario no existe."
 
