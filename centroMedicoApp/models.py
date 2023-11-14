@@ -5,6 +5,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 
 
+class DiasLaborables(models.Model):
+    nombre_dia = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.nombre_dia
+
 class Boleta(models.Model):
     id_boleta = models.PositiveIntegerField(primary_key=True)
     monto_boleta = models.DecimalField(max_digits=20, decimal_places=0)
@@ -87,7 +93,24 @@ class Medico(models.Model):
     email_med = models.EmailField()
     telefono_med = models.PositiveIntegerField()
     feccont_med = models.DateField()
+
+    DIAS_CHOICES = [
+        (0, 'Lunes'),
+        (1, 'Martes'),
+        (2, 'Miércoles'),
+        (3, 'Jueves'),
+        (4, 'Viernes'),
+        (5, 'Sábado'),
+        (6, 'Domingo')
+    ]
+
+    dias_laborables = models.ManyToManyField(DiasLaborables)
+    hora_inicio_trabajo = models.TimeField(null=True)
+    hora_fin_trabajo = models.TimeField(null=True)
     rut_sec = models.ForeignKey('Secretaria', on_delete=models.CASCADE)
+
+    def get_dias_laborables_display(self):
+        return [dia.nombre_dia for dia in self.dias_laborables.all()]
 
     def especialidad_nombre(self):
         return self.especialidadmedico_set.first().id_esp.nom_esp

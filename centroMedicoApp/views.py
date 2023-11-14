@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, UserCentro
+from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, UserCentro, DiasLaborables
 from django.views import View
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.db import IntegrityError
 import random
 from django.db.models import Max
@@ -138,6 +138,25 @@ def med_index(request, rut_med):
     }
 
     return render(request, 'pages/med_index.html', context)
+
+def modificar_horario(request, rut_medico):
+    medico = get_object_or_404(Medico, rut_med=rut_medico)
+
+    if request.method == 'POST':
+        # Manejar la lógica del formulario directamente en la vista
+        medico.dias_laborables.set(request.POST.getlist('dias_laborables'))
+        medico.hora_inicio_trabajo = request.POST['hora_inicio_trabajo']
+        medico.hora_fin_trabajo = request.POST['hora_fin_trabajo']
+        medico.save()
+
+        return HttpResponseRedirect('horarios')
+    else:
+        # Obtener datos para prellenar el formulario
+        dias_laborables_seleccionados = medico.dias_laborables.all()
+        hora_inicio_trabajo = medico.hora_inicio_trabajo
+        hora_fin_trabajo = medico.hora_fin_trabajo
+
+    return render(request, 'modificar_horario.html', {'medico': medico, 'dias_laborables_seleccionados': dias_laborables_seleccionados, 'hora_inicio_trabajo': hora_inicio_trabajo, 'hora_fin_trabajo': hora_fin_trabajo})
     
 def medicoList(request):
     medicos = Medico.objects.all()
