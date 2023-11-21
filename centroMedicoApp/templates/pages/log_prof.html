@@ -14,10 +14,10 @@
             <div class="col-md-6 offset-md-3">
                 <h2 class="text-center mb-4">Iniciar Sesión</h2>
                 <form action="{% url 'login_view' %}" method="post">
-                    {% csrf_token %} 
+                {% csrf_token %} 
                     <!-- Campo de nombre de usuario -->
                     <div class="mb-3">
-                        <label for="rut" class="form-label">Nombre de Usuario</label>
+                        <label for="rut" class="form-label">Rut sin digito verificador</label>
                         <input type="text" class="form-control" id="rut" name="rut" required>
                     </div>
 
@@ -29,7 +29,7 @@
 
                     <!-- Botón de inicio de sesión -->
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                </form>
+                </form><br>
                 {% if error_message %}
                     <div class="alert alert-danger">
                         {{ error_message }}

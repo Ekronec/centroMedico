@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Centro Medico Gallenos</title>
         {% load static %}
-        <link href="{% static 'css/index_pac.css' %}" rel="stylesheet">
+        <link href="{% static 'css/index_pa.css' %}" rel="stylesheet">
         <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
     </head>
@@ -17,7 +17,7 @@
           <div id="nav1">
             <ul class="nav nav-tabs  ">
               <li class="nav-item nav_no_sel">
-                <a href="index" class="nav-link" aria-current="page">Paciente</a>
+                <a href="{% url 'index' %}" class="nav-link" aria-current="page">Paciente</a>
               </li>
               <li class="nav-item link_nostyle nav-selected">
                 <a href="med_index" class="nav-link active">Profesional de Salud</a>
@@ -28,7 +28,20 @@
 
 
         <main>
-          
+          <div>
+            <h1>Detalles del Médico</h1>
+            <p>Nombre: {{ medico.pnombre_med }} {{ medico.apaterno_med }} {{ medico.amaterno_med }}</p>
+            <p>RUT: <span id="formatted-rut">{{ medico.rut_med }}-{{ medico.dv_med }}</span></p>
+            <p>Especialidad: {{ medico.especialidad_nombre }}</p>
+            <p>Días Laborales:
+                {% for dia in medico.dias_laborales.all %}
+                    {{ dia.nombre_dia }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p>Horario de trabajo: {{ medico.hora_inicio_trabajo|time:"H:i" }} - {{ medico.hora_fin_trabajo|time:"H:i" }}</p>
+            
+            <!-- Otros detalles del médico -->
+        </div>
 
         </main>
 

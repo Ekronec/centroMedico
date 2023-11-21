@@ -14,7 +14,7 @@ seleccionado.addEventListener('change', function(){
         .then(data => {
             // Asigna el precio al input
             precioInput.value = data.precio;
-            monto_boleta.value = data.precio - bono_ate.value;
+            monto_boleta.value = data.precio;
         })
 })
 

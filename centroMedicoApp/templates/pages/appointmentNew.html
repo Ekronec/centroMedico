@@ -17,6 +17,112 @@
 
         <form method="post" action="{% url 'appointmentNew' %}" class="mt-4">
             {% csrf_token %}
+            <label for="id_esp" class="form-label">Especialidad:</label>
+            <select id="id_esp" name="id_esp" class="form-select" required>
+                <option value="" disabled selected>Seleccione una especialidad</option>
+                {% for especialidad in especialidades %}
+                    <option value="{{ especialidad.id_esp }}">{{ especialidad.nom_esp }}</option>
+                {% endfor %}
+            </select>
+            <label for="rut_med">Seleccionar Médico:</label>
+            <select name="rut_med" id="rut_med">
+                <!-- Opciones de médicos se llenarán dinámicamente usando JavaScript -->
+            </select>
+
+            <!--<label for="fecha_ate">Seleccionar Fecha:</label>
+            <select id="fecha_ate" name="fecha_ate" class="form-select" required>
+                Opciones de fechas se llenarán dinámicamente usando JavaScript 
+            </select>
+
+             Campo de selección de horario 
+            <label for="hora_ate">Seleccionar Horario:</label>
+            <input type="datetime-local" name="hora_ate" id="hora_ate" required> -->
+
+            <label for="id_boleta" class="form-label visually-hidden">ID de la Boleta:</label>
+            <input type="text" name="id_boleta" id="id_boleta" class="form-control" readonly hidden>
+
+            <div class="col-md-6">
+                <label for="fecha_ate" class="form-label">Fecha de Atención:</label>
+                <input type="date" name="fecha_ate" id="fecha_ate" class="form-control" required onchange="actualizarHoras()">
+                <input type="date" name="fecha_boleta" id="fecha_boleta" hidden required><br>
+                <script src="{% static 'js/estimate.js' %}"></script>
+            </div>
+            <div class="col-md-6">
+                <label for="hora_ate" class="form-label">Hora de Atención:</label>
+                <select name="hora_ate" step="600" class="form-select" id="hora_ate" readonly required>
+                <script src="{% static 'js/index1.js' %}"></script>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="bono_ate" class="form-label ">Bono de Atención:</label>
+                        <input type="text" name="bono_ate" id="bono_ate" value="0" class="form-control" >
+                    </div>
+                    <div class="col-md-6">
+                        <label for="rut_cli" class="form-label">RUT del Paciente:</label>
+                        <input type="text" name="rut_cli" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dv_cli" class="form-label">DV del Paciente:</label>
+                        <input type="text" name="dv_cli" class="form-control" required>
+                    </div>
+                </div>
+    
+                <div class="row mt-3">
+                    
+                    <div class="col-md-6">
+                        <label for="precio_ate" class="form-label">Precio de Atención:</label>
+                        <input id="precio_ate" type="text" name="precio_ate" value="0" class="form-control" readonly required>
+                        <script src="{% static 'js/appointment4.js' %}"></script>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="pnom_cli" class="form-label">Primer Nombre del Paciente:</label>
+                        <input type="text" name="pnom_cli" class="form-control" required>
+                    </div>
+                    
+                </div>
+    
+                <div class="row mt-3">
+                    
+                    
+                </div>
+    
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="snom_cli" class="form-label">Segundo Nombre del Paciente:</label>
+                        <input type="text" name="snom_cli" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="apaterno_cli" class="form-label">Apellido Paterno del Paciente:</label>
+                        <input type="text" name="apaterno_cli" class="form-control" required>
+                    </div>
+                </div>
+    
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="amaterno_cli" class="form-label">Apellido Materno del Paciente:</label>
+                        <input type="text" name="amaterno_cli" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input id="monto_boleta" type="text" name="monto_boleta" value="0" class="form-control" readonly hidden required>
+                    </div>
+                </div>
+
+            <!-- Botón de envío del formulario -->
+            <button type="submit">Crear Atención</button>
+        </form>
+        {% if mensaje %}
+            <div class="alert alert-danger">
+                {{ mensaje }}
+            </div>
+        {% endif %}
+        <script src="{% static 'js/appointment2.js' %}"></script>
+    </div>
+</body>
+</html>
+
+
+
+<!--{% csrf_token %}
 
             <div class="row mt-3">
                 <div class="col-md-6">
@@ -64,6 +170,7 @@
                 <div class="col-md-6">
                     <label for="precio_ate" class="form-label">Precio de Atención:</label>
                     <input id="precio_ate" type="text" name="precio_ate" value="0" class="form-control" readonly required>
+                    <script src="{% static 'js/appointment.js' %}"></script>
                 </div>
                 <div class="col-md-6">
                     <label for="pnom_cli" class="form-label">Primer Nombre del Paciente:</label>
@@ -104,8 +211,4 @@
                 <div class="col-md-6">
                     <input type="submit" value="Crear Atención" class="btn btn-primary">
                 </div>
-            </div>
-        </form>
-    </div>
-</body>
-</html>
+            </div>-->

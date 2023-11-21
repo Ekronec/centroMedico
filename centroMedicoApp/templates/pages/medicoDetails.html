@@ -21,6 +21,14 @@
             <p>Nombre: {{ medico.pnombre_med }} {{ medico.apaterno_med }} {{ medico.amaterno_med }}</p>
             <p>RUT: <span id="formatted-rut">{{ medico.rut_med }}-{{ medico.dv_med }}</span></p>
             <p>Especialidad: {{ medico.especialidad_nombre }}</p>
+            <p>Secretaria Asignada: {{ medico.rut_sec }}</p>
+            <p>Días Laborales:
+                {% for dia in medico.dias_laborales.all %}
+                    {{ dia.nombre_dia }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p>Horario de trabajo: {{ medico.hora_inicio_trabajo|time:"H:i" }} - {{ medico.hora_fin_trabajo|time:"H:i" }}</p>
+            
             <!-- Otros detalles del médico -->
         </div>
 
