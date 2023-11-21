@@ -104,13 +104,13 @@ class Medico(models.Model):
         (6, 'Domingo')
     ]
 
-    dias_laborables = models.ManyToManyField(DiasLaborables)
+    dias_laborales = models.ManyToManyField(DiasLaborables)
     hora_inicio_trabajo = models.TimeField(null=True)
     hora_fin_trabajo = models.TimeField(null=True)
     rut_sec = models.ForeignKey('Secretaria', on_delete=models.CASCADE)
 
     def get_dias_laborables_display(self):
-        return [dia.nombre_dia for dia in self.dias_laborables.all()]
+        return [dia.nombre_dia for dia in self.dias_laborales.all()]
 
     def especialidad_nombre(self):
         return self.especialidadmedico_set.first().id_esp.nom_esp
@@ -138,6 +138,7 @@ class Atencion(models.Model):
     rut_med = models.ForeignKey(Medico, on_delete=models.CASCADE, related_name='atenciones')
     id_boleta = models.ForeignKey(Boleta, on_delete=models.CASCADE)
     id_esp = models.ForeignKey(Especialidad, on_delete=models.CASCADE)
+    disponible_ate = models.BooleanField(default=True)
 
     class Meta:
         unique_together = [('id_ate', 'id_esp')]

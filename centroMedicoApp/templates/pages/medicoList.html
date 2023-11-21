@@ -20,7 +20,7 @@
         <tbody>
             {% for medico in medicos %}
                 <tr>
-                    <td>{{ medico.rut_med }}</td>
+                    <td><a href="{% url 'medicoDetails' medico.rut_med %}">{{ medico.rut_med }}</a></td>
                     <td>{{ medico.pnombre_med }} {{ medico.snombre_med|default:"" }}</td>
                     <td>{{ medico.apaterno_med }}</td>
                     <td>{{ medico.amaterno_med }}</td>

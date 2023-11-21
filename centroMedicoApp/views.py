@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, UserCentro, DiasLaborables
 from django.views import View
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseServerError
 from django.db import IntegrityError
 import random
 from django.db.models import Max
@@ -31,7 +31,6 @@ def appointment_details(request):
 
 def appointmentNew(request):
     context = {}
-    #medicos = Medico.objects.all()
     especialidad = Especialidad.objects.all();
     paciente_detail = Paciente.objects.all();
     medico_detail = Medico.objects.all();
@@ -118,13 +117,27 @@ def appointmentNew(request):
             )
             atencion.save()
             context = {"mensaje": "OK Atención Registrada"}
-            return render(request, "pages/index.html", context)
+            return render(request, "pages/appointmentNew.html", context)
         except IntegrityError:
         # Si falla por una restricción única, genera un nuevo ID de boleta y vuelve a intentar
             new_id_boleta = random.randint(100000, 999999)  # Genera un nuevo ID aleatorio
             return HttpResponse(f"Error: El ID de boleta  ya está en uso. Intenta con {new_id_boleta}")
     else:
         return render(request, 'pages/appointmentNew.html', context)
+    
+def obtener_medicos_por_especialidad(request, id_esp):
+
+    # Obtén los objetos de EspecialidadMedico que corresponden a la especialidad seleccionada
+    especialidad_medicos = EspecialidadMedico.objects.filter(id_esp=id_esp)
+
+    # Obtén los médicos asociados a través de la relación ForeignKey en EspecialidadMedico
+    medicos = [especialidad_medico.rut_med for especialidad_medico in especialidad_medicos]
+
+    
+    # Ahora, serializa los datos de los médicos a un formato JSON
+    medicos_data = [{'rut_med': medico.rut_med, 'pnombre_med': medico.pnombre_med, 'apaterno_med': medico.apaterno_med} for medico in medicos]
+    
+    return JsonResponse({'medicos': medicos_data})
        
     
 # Medico  
@@ -132,9 +145,16 @@ def appointmentNew(request):
 def med_index(request, rut_med):
 
     medico = Medico.objects.get(rut_med=rut_med)
+    dias_lab = DiasLaborables.objects.all()
+
+    especialidades = Especialidad.objects.filter(
+            especialidadmedico__rut_med=rut_med
+        ).values('nom_esp')
 
     context = {
         'medico': medico,
+        'dias_lab': dias_lab,
+        'especialidades': especialidades
     }
 
     return render(request, 'pages/med_index.html', context)
@@ -167,6 +187,7 @@ def medicoDetails(request, rut_med):
     try:
         # Obtener el médico a partir del rut_med
         medico = Medico.objects.get(rut_med=rut_med)
+        dias_lab = DiasLaborables.objects.all()
 
         # Obtener las especialidades asociadas a este médico
         especialidades = Especialidad.objects.filter(
@@ -175,6 +196,7 @@ def medicoDetails(request, rut_med):
 
         context = {
             'medico': medico,
+            'dias_lab': dias_lab,
             'especialidades': especialidades
         }
 
@@ -183,6 +205,26 @@ def medicoDetails(request, rut_med):
     except Medico.DoesNotExist:
         # Manejar el caso en que no se encuentre el médico
         return render(request, 'pages/medicoDetails.html')
+
+def obtener_fechas_disponibles(request, rut_med):
+    
+    try:
+        # Obtén el médico seleccionado
+        medico = Medico.objects.get(rut_med=rut_med)
+
+        # Lógica para obtener las fechas disponibles del médico
+        fechas_disponibles = []  # Reemplaza esto con tu lógica real
+
+        # Ahora, serializa las fechas a un formato JSON
+        fechas_data = [fecha.strftime("%Y-%m-%d") for fecha in fechas_disponibles]
+
+        print(f"Fechas disponibles para {medico}: {fechas_data}")
+
+        return JsonResponse({'fechas': fechas_data})
+    
+    except Exception as e:
+        print(f"Error al obtener fechas disponibles: {e}")
+        return HttpResponseServerError()
 
 def create_medico(request):
     if request.method == "POST":
@@ -229,8 +271,11 @@ def sec_index(request, rut_sec):
 
     secretaria = Secretaria.objects.get(rut_sec=rut_sec)
 
+    medicos_asignados = secretaria.medico_set.all()
+
     context = {
         'secretaria': secretaria,
+        'medicos_asignados': medicos_asignados
     }
 
     return render(request, 'pages/sec_index.html', context)
@@ -366,7 +411,7 @@ def create_user(request):
     
 def login_view(request):
 
-    error_message = ""  # Inicializa con un valor predeterminado
+    error_message = "" 
     redirect_url = ""
     user = None
 

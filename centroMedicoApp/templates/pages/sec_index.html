@@ -17,7 +17,7 @@
           <div id="nav1">
             <ul class="nav nav-tabs  ">
               <li class="nav-item nav_no_sel">
-                <a href="index" class="nav-link" aria-current="page">Paciente</a>
+                <a href="{% url 'index' %}" class="nav-link" aria-current="page">Paciente</a>
               </li>
               <li class="nav-item link_nostyle nav-selected">
                 <a href="med_index" class="nav-link active">Profesional de Salud</a>
@@ -29,6 +29,13 @@
 
         <main>
           <h2> Bienvenido {{ secretaria.pnom_sec}} </h2>
+
+          <h2>Médicos Asignados:</h2>
+          <ul>
+              {% for medico in medicos_asignados %}
+                  <li><a href="{% url 'medicoDetails' medico.rut_med %}">{{ medico.pnombre_med }} {{ medico.apaterno_med }}</a></li>
+              {% endfor %}
+          </ul>
 
         </main>
 
