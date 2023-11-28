@@ -29,6 +29,11 @@ def appointment_details(request):
         Atencion.DoesNotExist
         return HttpResponse(f'No exiten atenciones')
 
+def is_disponible(rut_med, fecha_ate, hora_ate):
+    # Verifica si hay una atención existente para el médico en la fecha y hora especificadas
+    return not Atencion.objects.filter(rut_med=rut_med, fecha_ate=fecha_ate, hora_ate=hora_ate).exists()
+
+
 def appointmentNew(request):
     context = {}
     especialidad = Especialidad.objects.all();
@@ -53,6 +58,10 @@ def appointmentNew(request):
         rut_cli = request.POST["rut_cli"]
 
         last_boleta = Boleta.objects.order_by('-id_boleta').first()
+
+        if not is_disponible(rut_med, fecha_ate, hora_ate):
+            return JsonResponse({"mensaje": "La hora y fecha seleccionadas no están disponibles."}, status=400)
+
 
         if last_boleta:
             next_id_boleta = last_boleta.id_boleta + 1
