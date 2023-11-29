@@ -12,6 +12,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode 
+from django.contrib.auth.decorators import login_required 
 
 def index(request):
     return render(request, "pages/index.html")
@@ -155,14 +157,16 @@ def obtener_medicos_por_especialidad(request, id_esp):
        
     
 # Medico  
+@login_required
+def med_index(request, encoded_rut):
 
-def med_index(request, rut_med):
+    rut_med1 = urlsafe_base64_decode(encoded_rut)
 
-    medico = Medico.objects.get(rut_med=rut_med)
+    medico = Medico.objects.get(rut_med=rut_med1)
     dias_lab = DiasLaborables.objects.all()
 
     especialidades = Especialidad.objects.filter(
-            especialidadmedico__rut_med=rut_med
+            especialidadmedico__rut_med=rut_med1
         ).values('nom_esp')
 
     context = {
@@ -280,8 +284,10 @@ def create_medico(request):
 
     
 # Secretaria
+@login_required
+def sec_index(request, encoded_rut):
 
-def sec_index(request, rut_sec):
+    rut_sec = urlsafe_base64_decode(encoded_rut)
 
     secretaria = Secretaria.objects.get(rut_sec=rut_sec)
 
@@ -440,14 +446,15 @@ def login_view(request):
         if not rut.isdigit():
             return JsonResponse({'error_message': 'El Rut debe ser un número. Tome en cuenta que es sin el guion'}, status=400)
         else:
+            encoded_rut = urlsafe_base64_encode(rut.encode())
             try:
                 # Intenta obtener un usuario de UserCentro con el Content Type y el Object ID correctos
                 user = UserCentro.objects.get(content_type=content_type_medico, object_id=rut)
-                redirect_url = 'med_index/' + rut
+                redirect_url = 'med_index/' + encoded_rut
             except UserCentro.DoesNotExist:
                 try:
                     user = UserCentro.objects.get(content_type=content_type_secretaria, object_id=rut)
-                    redirect_url = 'sec_index/' + rut
+                    redirect_url = 'sec_index/' + encoded_rut
                 except UserCentro.DoesNotExist:
                     error_message = "El usuario no existe."
 
@@ -455,7 +462,9 @@ def login_view(request):
                 if user and user.password == password:
                     # Autenticación exitosa
                     token = secrets.token_urlsafe(32)
-                    return JsonResponse({'token': token, 'redirect_url': redirect_url})
+                    response = JsonResponse({'token': token, 'redirect_url': redirect_url})
+                    response.set_cookie('user_id', rut, secure=True, httponly=True)
+                    return response
                 else:
                         # Autenticación fallida
                     return JsonResponse({'error_message': 'Las credenciales son incorrectas. Inténtalo de nuevo.'}, status=400)
