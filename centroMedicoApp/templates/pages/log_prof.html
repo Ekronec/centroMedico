@@ -13,7 +13,7 @@
         <div class="row mt-5">
             <div class="col-md-6 offset-md-3">
                 <h2 class="text-center mb-4">Iniciar Sesión</h2>
-                <form action="{% url 'login_view' %}" method="post">
+                <form action="{% url 'login_view' %}" method="POST" id="loginForm">
                 {% csrf_token %} 
                     <!-- Campo de nombre de usuario -->
                     <div class="mb-3">
@@ -30,15 +30,54 @@
                     <!-- Botón de inicio de sesión -->
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                 </form><br>
-                {% if error_message %}
-                    <div class="alert alert-danger">
-                        {{ error_message }}
-                    </div>
-                {% endif %}
+                <div id="error-message" class="alert alert-danger" style="display: none;"></div>
             </div>
         </div>
     </div>
 
+    <script>
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            console.log("aprete un boton")
+            event.preventDefault();
+        
+            var formData = new FormData(this);
+        
+            fetch('{% url "login_view" %}', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if ('token' in data) {
+                    // Guarda el token en el almacenamiento local o en una cookie
+                    localStorage.setItem('token', data.token);
+                    // Redirige a la URL deseada
+                    // Codificar el URL antes de redirigir
+                    var encodedRedirectUrl = encodeURIComponent(data.redirect_url);
+                    // Redirigir al URL codificado
+                    window.location.href = encodedRedirectUrl;
+                } else {
+                    // Maneja el mensaje de error
+                    var errorMessageElement = document.getElementById('error-message');
+                    errorMessageElement.textContent = data.error_message;
+                    errorMessageElement.style.display = 'block';
+                    console.log("ayuda2")
+                }
+                console.log(data);
+            })
+            .catch(error => {
+                // Manejar errores
+                console.error('Error en la solicitud:', error);
+            });
+        });
+        
+    </script>
+
     <!-- Agrega el enlace al archivo JS de Bootstrap 5 y a la biblioteca de jQuery -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+</body>
+</html>

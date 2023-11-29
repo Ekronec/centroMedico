@@ -1,12 +1,19 @@
+import secrets
+from tokenize import generate_tokens
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, UserCentro, DiasLaborables
 from django.views import View
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseServerError
 from django.db import IntegrityError
 import random
-from django.db.models import Max
 from django.contrib.auth import authenticate, login
 from django.contrib.contenttypes.models import ContentType
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode 
+from django.contrib.auth.decorators import login_required 
 
 def index(request):
     return render(request, "pages/index.html")
@@ -150,14 +157,16 @@ def obtener_medicos_por_especialidad(request, id_esp):
        
     
 # Medico  
+@login_required
+def med_index(request, encoded_rut):
 
-def med_index(request, rut_med):
+    rut_med1 = urlsafe_base64_decode(encoded_rut)
 
-    medico = Medico.objects.get(rut_med=rut_med)
+    medico = Medico.objects.get(rut_med=rut_med1)
     dias_lab = DiasLaborables.objects.all()
 
     especialidades = Especialidad.objects.filter(
-            especialidadmedico__rut_med=rut_med
+            especialidadmedico__rut_med=rut_med1
         ).values('nom_esp')
 
     context = {
@@ -275,8 +284,10 @@ def create_medico(request):
 
     
 # Secretaria
+@login_required
+def sec_index(request, encoded_rut):
 
-def sec_index(request, rut_sec):
+    rut_sec = urlsafe_base64_decode(encoded_rut)
 
     secretaria = Secretaria.objects.get(rut_sec=rut_sec)
 
@@ -417,7 +428,7 @@ def create_user(request):
         return render(request, "pages/user_detail.html", context)
     else:
         return render(request, 'pages/user_new.html')    
-    
+  
 def login_view(request):
 
     error_message = "" 
@@ -433,26 +444,30 @@ def login_view(request):
         content_type_secretaria = ContentType.objects.get(app_label='centroMedicoApp', model='secretaria')
 
         if not rut.isdigit():
-            error_message = 'El Rut debe ser un número. Tome en cuenta que es sin el guion'
+            return JsonResponse({'error_message': 'El Rut debe ser un número. Tome en cuenta que es sin el guion'}, status=400)
         else:
+            encoded_rut = urlsafe_base64_encode(rut.encode())
             try:
                 # Intenta obtener un usuario de UserCentro con el Content Type y el Object ID correctos
                 user = UserCentro.objects.get(content_type=content_type_medico, object_id=rut)
-                redirect_url = 'med_index/' + rut
+                redirect_url = 'med_index/' + encoded_rut
             except UserCentro.DoesNotExist:
                 try:
                     user = UserCentro.objects.get(content_type=content_type_secretaria, object_id=rut)
-                    redirect_url = 'sec_index/' + rut
+                    redirect_url = 'sec_index/' + encoded_rut
                 except UserCentro.DoesNotExist:
                     error_message = "El usuario no existe."
 
             try:
-                if user.password == password:
-                    # La contraseña coincide, puedes autenticar al usuario aquí si lo deseas
-                    # Luego, redirige al usuario a donde quieras
-                    return redirect(redirect_url)
+                if user and user.password == password:
+                    # Autenticación exitosa
+                    token = secrets.token_urlsafe(32)
+                    response = JsonResponse({'token': token, 'redirect_url': redirect_url})
+                    response.set_cookie('user_id', rut, secure=True, httponly=True)
+                    return response
                 else:
-                    error_message = "Las credenciales son incorrectas. Inténtalo de nuevo."
+                        # Autenticación fallida
+                    return JsonResponse({'error_message': 'Las credenciales son incorrectas. Inténtalo de nuevo.'}, status=400)
             except AttributeError:
                 error_message = "El usuario no existe."
 
