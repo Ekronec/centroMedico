@@ -1,12 +1,17 @@
+import secrets
+from tokenize import generate_tokens
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Atencion, Medico, Boleta, Especialidad, EspecialidadMedico, Secretaria, Paciente, PagoAtencion, UserCentro, DiasLaborables
 from django.views import View
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseServerError
 from django.db import IntegrityError
 import random
-from django.db.models import Max
 from django.contrib.auth import authenticate, login
 from django.contrib.contenttypes.models import ContentType
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 
 def index(request):
     return render(request, "pages/index.html")
@@ -417,7 +422,7 @@ def create_user(request):
         return render(request, "pages/user_detail.html", context)
     else:
         return render(request, 'pages/user_new.html')    
-    
+  
 def login_view(request):
 
     error_message = "" 
@@ -433,7 +438,7 @@ def login_view(request):
         content_type_secretaria = ContentType.objects.get(app_label='centroMedicoApp', model='secretaria')
 
         if not rut.isdigit():
-            error_message = 'El Rut debe ser un número. Tome en cuenta que es sin el guion'
+            return JsonResponse({'error_message': 'El Rut debe ser un número. Tome en cuenta que es sin el guion'}, status=400)
         else:
             try:
                 # Intenta obtener un usuario de UserCentro con el Content Type y el Object ID correctos
@@ -447,12 +452,13 @@ def login_view(request):
                     error_message = "El usuario no existe."
 
             try:
-                if user.password == password:
-                    # La contraseña coincide, puedes autenticar al usuario aquí si lo deseas
-                    # Luego, redirige al usuario a donde quieras
-                    return redirect(redirect_url)
+                if user and user.password == password:
+                    # Autenticación exitosa
+                    token = secrets.token_urlsafe(32)
+                    return JsonResponse({'token': token, 'redirect_url': redirect_url})
                 else:
-                    error_message = "Las credenciales son incorrectas. Inténtalo de nuevo."
+                        # Autenticación fallida
+                    return JsonResponse({'error_message': 'Las credenciales son incorrectas. Inténtalo de nuevo.'}, status=400)
             except AttributeError:
                 error_message = "El usuario no existe."
 
