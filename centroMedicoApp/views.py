@@ -434,6 +434,7 @@ def login_view(request):
     error_message = "" 
     redirect_url = ""
     user = None
+    LIMITE_INTENTOS_FALLIDOS = 30 
 
     if request.method == 'POST':
         rut = request.POST['rut']
@@ -461,12 +462,21 @@ def login_view(request):
             try:
                 if user and user.password == password:
                     # Autenticación exitosa
+                    user.failed_login_attempts = 0
+                    user.save()
                     token = secrets.token_urlsafe(32)
                     response = JsonResponse({'token': token, 'redirect_url': redirect_url})
                     response.set_cookie('user_id', rut, secure=True, httponly=True)
                     return response
                 else:
-                        # Autenticación fallida
+                    # Autenticación fallida
+                    user.failed_login_attempts += 1
+                    user.save()
+                    error_message = "Las credenciales son incorrectas. Inténtalo de nuevo."
+                    if user.failed_login_attempts >= LIMITE_INTENTOS_FALLIDOS:
+                        user.is_active = False  # O cualquier otro mecanismo de bloqueo que desees
+                        user.save()
+                        error_message = "Cuenta bloqueada debido a múltiples intentos fallidos."
                     return JsonResponse({'error_message': 'Las credenciales son incorrectas. Inténtalo de nuevo.'}, status=400)
             except AttributeError:
                 error_message = "El usuario no existe."

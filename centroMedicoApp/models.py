@@ -34,6 +34,7 @@ class UserCentro(models.Model):
     object_id = models.PositiveIntegerField(null=True)
     rut = GenericForeignKey('content_type', 'object_id')
     password = models.CharField(max_length=30, default="")
+    failed_login_attempts = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return str(self.rut)
