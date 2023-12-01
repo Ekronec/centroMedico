@@ -130,8 +130,8 @@ def appointmentNew(request):
                 id_esp=esp_id,
             )
             atencion.save()
-            context = {"mensaje": "OK Atención Registrada"}
-            return render(request, "pages/appointmentNew.html", context)
+            context = {"mensaje": "OK Atención Registrada", 'atencion':atencion}
+            return render(request, "pages/pago.html", context)
         except IntegrityError:
         # Si falla por una restricción única, genera un nuevo ID de boleta y vuelve a intentar
             new_id_boleta = random.randint(100000, 999999)  # Genera un nuevo ID aleatorio
@@ -368,6 +368,28 @@ def create_boleta(request):
     
     
 # Pago Atencion
+
+def web_pago(request, id_ate):
+
+    atencion = Atencion.objects.get(id_ate=id_ate)
+
+    context = {
+        'atencion': atencion
+    }
+
+    return render(request, 'pages/pago.html', context)
+
+def eliminar_atencion(request, id_ate):
+    
+    try:
+        atencion = Atencion.objects.get(id_ate=id_ate)
+        atencion.delete()
+        return JsonResponse({'mensaje': 'Atención cancelada correctamente'})
+    except Atencion.DoesNotExist:
+        return JsonResponse({'mensaje': 'La atención no existe'}, status=404)
+    except Exception as e:
+        return JsonResponse({'mensaje': f'Error al cancelar la atención: {str(e)}'}, status=500)
+
 
 def pago_atencion_list(request):
     pagos_atencion = PagoAtencion.objects.all()

@@ -108,7 +108,12 @@
                 </div>
 
             <!-- Botón de envío del formulario -->
-            <button type="submit">Crear Atención</button>
+            <button id="crear_atencion" type="submit">Crear Atención</button>
+            <script> document.getElementById('crear_atencion').addEventListener('click', function() {
+                var id_ate = '{{ atencion.id_ate }}';
+                var destinado = '/centroMedicoApp/pago' + id_ate;
+                window.location.href = destinado; 
+            });</script>
         </form>
         {% if mensaje %}
             <div class="alert alert-danger">

@@ -15,4 +15,6 @@ urlpatterns = [
     path('login_view', views.login_view, name='login_view'),
     path('obtener_medicos_por_especialidad/<int:id_esp>/', views.obtener_medicos_por_especialidad, name='obtener_medicos_por_especialidad'),
     path('obtener_fechas_disponibles/<int:rut_med>/', views.obtener_fechas_disponibles, name='obtener_fechas_disponibles'),
+    path('pago/<int:id_ate>/', views.web_pago, name="web_pago"),
+    path('eliminar_atencion/<int:id_ate>/', views.eliminar_atencion, name="eliminar_atencion")
 ]
