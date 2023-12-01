@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago de Atención Médica</title>
+    <!-- Agrega tus enlaces a Bootstrap y otros estilos según sea necesario -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Pago de Atención Médica</h2>
+        <div class="card">
+            <div class="card-body">
+                <!-- Muestra la información de la atención -->
+                <h5 class="card-title">Información de la Atención</h5>
+                <p class="card-text">Fecha: {{ atencion.fecha_ate }}</p>
+                <p class="card-text">Hora: {{ atencion.hora_ate }}</p>
+                <p class="card-text">Precio: {{ atencion.precio_ate }}</p>
+                <p class="card-text">Bono: {{ atencion.bono_ate }}</p>
+
+                <!-- Instrucciones de pago -->
+                <h5 class="card-title mt-4">Instrucciones de Pago</h5>
+                <p class="card-text">Por favor, realice el pago utilizando el método seleccionado.</p>
+
+                <!-- Botones de confirmación y cancelación -->
+                <button id="btn-confirmar" class="btn btn-primary">Confirmar Pago</button>
+                <button id="btn-cancelar" class="btn btn-danger">Cancelar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agrega tus enlaces a scripts y otros recursos según sea necesario -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <script>
+        function obtenerCookie(nombre) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + nombre + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+        document.getElementById('btn-cancelar').addEventListener('click', function() {
+            // Obtener el valor de id_ate desde el contexto de la vista
+            var id_ate = '{{ atencion.id_ate }}';
+            var csrftoken = obtenerCookie('csrftoken');
+        
+            // Verificar si id_ate está definido y es un número
+            if (id_ate && !isNaN(id_ate)) {
+                // Construir la URL inversa solo si id_ate es un número
+                var url = '{% url "eliminar_atencion" 0 %}'.replace('0', id_ate);
+        
+                // Realizar una solicitud al servidor para eliminar la atención
+                fetch(url, { method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken
+                    } })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.mensaje);
+                        // Redirigir al usuario a otra página si es necesario
+                        window.location.href = '/centroMedicoApp/index';  // Cambiar a la URL deseada
+                    })
+                    .catch(error => {
+                        console.error('Error al cancelar atención:', error);
+                    });
+            } else {
+                console.error('Error: id_ate no está definido o no es un número');
+            }
+        });
+        
+        document.getElementById('btn-confirmar').addEventListener('click', function() {
+            alert('Atención registrada');
+            // Puedes redirigir al usuario a otra página si es necesario
+            window.location.href = '/centroMedicoApp/index';  // Cambiar a la URL deseada
+        });
+    </script>
+</body>
+</html>
