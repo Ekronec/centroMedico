@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago de Atención Médica</title>
+    <!-- Agrega tus enlaces a Bootstrap y otros estilos según sea necesario -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Pago de Atención Médica</h2>
+        <div class="card">
+            <div class="card-body">
+                <!-- Muestra la información de la atención -->
+                <h5 class="card-title">Información de la Atención</h5>
+                <p class="card-text">Fecha: {{ atencion.fecha_ate }}</p>
+                <p class="card-text">Hora: {{ atencion.hora_formateada }}</p>
+                <p class="card-text">Precio: {{ atencion.precio_ate }}</p>
+                <p class="card-text">Bono: {{ atencion.bono_ate }}</p>
+
+                <!-- Instrucciones de pago -->
+                <h5 class="card-title mt-4">Instrucciones de Pago</h5>
+                <p class="card-text">Por favor, realice el pago utilizando el método seleccionado.</p>
+
+                <!-- Agrega más detalles e instrucciones de pago según tus necesidades -->
+
+                <!-- Botón de confirmación de pago -->
+                <a href="{% url 'confirmar_pago' atencion.id_ate %}" class="btn btn-primary">Confirmar Pago</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agrega tus enlaces a scripts y otros recursos según sea necesario -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

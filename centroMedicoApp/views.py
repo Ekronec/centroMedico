@@ -25,8 +25,6 @@ def appointment_details(request):
     try:
         atenciones = Atencion.objects.all();
 
-
-
         context ={
             "atenciones": atenciones,
         }
@@ -163,6 +161,7 @@ def med_index(request, encoded_rut):
     rut_med1 = urlsafe_base64_decode(encoded_rut)
 
     medico = Medico.objects.get(rut_med=rut_med1)
+    atenciones = Atencion.objects.filter(rut_med=rut_med1)
     dias_lab = DiasLaborables.objects.all()
 
     especialidades = Especialidad.objects.filter(
@@ -172,7 +171,8 @@ def med_index(request, encoded_rut):
     context = {
         'medico': medico,
         'dias_lab': dias_lab,
-        'especialidades': especialidades
+        'especialidades': especialidades,
+        'atenciones':atenciones
     }
 
     return render(request, 'pages/med_index.html', context)
